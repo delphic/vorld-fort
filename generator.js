@@ -8,21 +8,22 @@ var Generator = (function() {
 	// Doorways	- DONE!
 	// Portcullis / Entrance in one wall - DONE!
 	// Internal pillars on wall floors
-	// Expose generation variables.
+	// Expose generation variables. - DONE!
 		// Choice of tower or fort
-	// Windows on Walls
+	// Windows on Walls - auto spacing
 	// Auto spacing windows in larger towers
 	// Block Type Varitions
 
 	// Extensions
 	// Walls should have a maximum depth - and should update door positions accordingly
 	// Circular Land with peardrop shape to look like a floating island - DONE!
-	// Keep Tower next to entrance if walls large enough
-	// Alternate trap door holes for thin Towers
+	// A "Keep" Tower next to entrance if walls large enough
+	// Alternate trap door hole positions for thin Towers
 	// Create Stair Cases for large towers
-	// Internal stairs to walls
+	// Fort Interior  stairs to walls
 	// If Wall Floors == TowerFloors - add steps in battlements from wall to tower
-	// Skybox or at least configurable clear colour!
+	// Skybox or at least configurable clear colour - DONE
+
 	// Draw outline which builds walls with towers at the corners
 	// Ability to add foundations for slight variation in land height
 	// Ability to have multiple levels of building to compensate for large changing in land height
