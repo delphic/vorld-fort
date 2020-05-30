@@ -1,0 +1,71 @@
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+fieldset {
+	display: none;
+	background-color: white;
+	font-family: monospace;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	max-width: 550px;
+}
+fieldset form {
+	display: none;
+}
+fieldset div {
+	margin: 5px 0;
+}
+
+fieldset select {
+	width: 150px;
+}
+fieldset input {
+	width: 50px;
+}
+fieldset input.inline {
+    width: 40px;
+}
+fieldset input.button {
+	width: auto;
+	margin: 5px 0;
+}
+#fury {
+	width: 100%;
+	height: 100vh;
+}
+#progressDisplay {
+	position: absolute;
+	width: 210px;
+	top: 10px;
+	right: 10px;
+	background-color: white;
+	border: 1px solid grey;
+	font-size: 10px;
+	font-family: sans-serif;
+}
+#progressStage {
+	margin: 10px auto;
+	text-align: center;
+}
+#progressBarOuter {
+	margin: 10px;
+	height: 20px;
+	border: 1px solid grey;
+}
+#progressBarInner {
+	height: 100%;
+	width: 0;
+	background-color: cornflowerblue;
+}
+#controls {
+	display: block;
+	left: 10px;
+	width: 300px;
+}
+
+#controls p {
+	margin: 0.5em 0;
+}

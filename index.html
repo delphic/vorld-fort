@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Vorld: Fort Generator</title>
+		<script src="/libs/gl-matrix.js"></script>
+		<script src="/libs/jquery-2.0.2.js"></script>
+		<script src="/fury.js"></script>
+		<link rel="icon" href="/images/favicon.png">
+		<link rel="stylesheet" href="styles.css" type="text/css" />
+	</head>
+	<body>
+		<canvas id="fury" oncontextmenu="return false;"></canvas>
+		<script src="vorld.js"></script>
+		<script src="voxelshaders.js"></script>
+		<script src="atlasbuilder.js"></script>
+		<script src="generator.js"></script>
+		<script src="mesher.js"></script>
+		<script src="game.js"></script>
+		<fieldset id="controls">
+				<p>Use WASD to move the camera, and right click and drag to rotate it.</p>
+				<input id="hideControls" class="button" type="button" value="Understood" />
+		</fieldset>
+		<fieldset id="generationParameters">
+			<input id="showGenerationForm" class="button" type="button" value="Show Generation Parameters" />
+			<form id="generationForm">
+				<div>
+					<label for="spacing">Tower Spacing: </label><input id="spacing" type="number" step="2" "min"="4" value="12" />
+				</div>
+				<div>
+					<label for="towerWidth">Tower Width: </label><input id="towerWidth" type="number" step="2" min="5" value="9" />
+				</div>
+				<div>
+					<label for="towerFloors">Tower Floors: </label><input id="towerFloors" type="number" step="1" min="1" value="3" />
+				</div>
+				<div>
+					<label for="wallFloors">Wall Floors: </label><input id="wallFloors" type="number" step="1" min="1" value="2" />
+				</div>
+				<div>
+					<input id="regen" class="button" type="button" value="Regenerate Fort" />
+					<input id="hideGenerationForm" class="button" type="button" value="Hide Form" />
+				</div>
+			</form>
+		</fieldset>
+		<div id="progressDisplay">
+			<p id="progressStage">Generating Fort</p>
+			<div id="progressBarOuter">
+				<div id="progressBarInner"></div>
+			</div>
+		</div>
+	</body>
+</html>
