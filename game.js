@@ -256,7 +256,7 @@ var handleInput = function(elapsed) {
 // Create Texture
 let quality = VorldConfig.getAtlasInfo().greedy ? "medium" : "pixel";
 AtlasBuilder.build({
-	atlasSrc: "/images/atlas.png",
+	atlasSrc: "images/atlas.png",
 	upscale: 8,
 	padding: 2,	// Wierdly we have to set the vorld config to have the atlas size and tile size to half the actual value... not sure what that's about
 	size: 8,
