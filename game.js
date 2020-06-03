@@ -261,4 +261,4 @@ image.onload = function() {
 	atlasMaterial.textures["uSampler"] = texture;
 	awake();
 };
-image.src = "/images/atlas_array.png";
+image.src = "images/atlas_array.png";
