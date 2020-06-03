@@ -254,15 +254,11 @@ var handleInput = function(elapsed) {
 };
 
 // Create Texture
-let quality = VorldConfig.getAtlasInfo().greedy ? "medium" : "pixel";
-AtlasBuilder.build({
-	atlasSrc: "/images/atlas.png",
-	upscale: 8,
-	padding: 2,	// Wierdly we have to set the vorld config to have the atlas size and tile size to half the actual value... not sure what that's about
-	size: 8,
-	callback: function(image) {
-		var texture = Fury.Renderer.createTexture(image, quality, true);
-		atlasMaterial.textures["uSampler"] = texture;
-		awake();
-	}
-});
+// TODO: Use atlas builder with array of images so we don't have to manually upscale or manually configure config
+let image = new Image();
+image.onload = function() {
+	var texture = Fury.Renderer.createTextureArray(image, 64, 64, 13, "pixel", true);
+	atlasMaterial.textures["uSampler"] = texture;
+	awake();
+};
+image.src = "/images/atlas_array.png";

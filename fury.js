@@ -1,4 +1,4 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 // glMatrix assumed Global
 var Camera = module.exports = function() {
 	var exports = {};
@@ -7,8 +7,8 @@ var Camera = module.exports = function() {
 		// Set Position x, y, z
 		// Note do not have enforced copy setters, the user is responsible for this
 		getDepth: function(object) {
-			var p0 = this.position[0], p1 = this.position[1], p2 = this.position[2], 
-				q0 = this.rotation[0], q1 = this.rotation[1], q2 = this.rotation[2], q3 = this.rotation[3], 
+			var p0 = this.position[0], p1 = this.position[1], p2 = this.position[2],
+				q0 = this.rotation[0], q1 = this.rotation[1], q2 = this.rotation[2], q3 = this.rotation[3],
 				l0 = object.transform.position[0], l1 = object.transform.position[1], l2 = object.transform.position[2];
 			return 2*(q1*q3 + q0*q2)*(l0 - p0) + 2*(q2*q3 - q0*q1)*(l1 - p1) + (1 - 2*q1*q1 - 2*q2*q2)*(l2 - p2);
 		},
@@ -57,7 +57,9 @@ var Camera = module.exports = function() {
 		}
 		camera.ratio = parameters.ratio ? parameters.ratio : 1.0;
 		camera.position = parameters.position ? parameters.position : vec3.create();
-		camera.rotation = parameters.rotation ? parameters.rotation : quat.create();	
+		camera.rotation = parameters.rotation ? parameters.rotation : quat.create();
+
+		// TODO: Add Clear Color
 
 		// TODO: Arguably post-processing effects and target could/should be on the camera, the other option is on the scene
 
@@ -65,6 +67,7 @@ var Camera = module.exports = function() {
 	};
 	return exports;
 }();
+
 },{}],2:[function(require,module,exports){
 var canvas;
 
@@ -530,7 +533,7 @@ var Mesh = module.exports = function(){
 var gl, currentShaderProgram, anisotropyExt, maxAnisotropy;
 
 exports.init = function(canvas) {
-	gl = canvas.getContext('webgl');
+	gl = canvas.getContext('webgl2');
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);	// TODO: Make configurable
 	gl.enable(gl.DEPTH_TEST);	// TODO: expose as method
 	gl.enable(gl.CULL_FACE);  // TODO: expose as method
@@ -639,50 +642,79 @@ exports.createTexture = function(source, quality, clamp) {
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
 
-	if (quality === TextureQuality.Pixel) {
-		// Unfortunately it doesn't seem to allow MAG_FILTER nearest with MIN_FILTER MIPMAP
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-		if (anisotropyExt) {
-			gl.texParameterf(gl.TEXTURE_2D, anisotropyExt.TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
-		}
-		gl.generateMipmap(gl.TEXTURE_2D);
-	}
-	else if (quality === TextureQuality.Highest) {
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-		if (anisotropyExt) {
-			gl.texParameterf(gl.TEXTURE_2D, anisotropyExt.TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
-		}
-		gl.generateMipmap(gl.TEXTURE_2D);
-	}
-	else if (quality === TextureQuality.High) {
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-		if (anisotropyExt) {
-			gl.texParameterf(gl.TEXTURE_2D, anisotropyExt.TEXTURE_MAX_ANISOTROPY_EXT, Math.round(maxAnisotropy/2));
-		}
-		gl.generateMipmap(gl.TEXTURE_2D);
-	}
-	else if (quality === TextureQuality.Medium) {
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-	}
-	else {
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-	}
+	setTextureQuality(gl.TEXTURE_2D, quality);
+
 	if (clamp) {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	}
 	gl.bindTexture(gl.TEXTURE_2D, null);
+	texture.glTextureType = gl.TEXTURE_2D;
 	return texture;
+};
+
+/// width and height are of an individual texture
+exports.createTextureArray = function(source, width, height, imageCount, quality, clamp) {
+	var texture = gl.createTexture();
+	// gl.activeTexture(gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, width, height, imageCount, 0, gl.RGBA, gl.UNSIGNED_BYTE, source);
+
+	setTextureQuality(gl.TEXTURE_2D_ARRAY, quality);
+
+	if (clamp) {
+		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	}
+
+	gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+	texture.glTextureType = gl.TEXTURE_2D_ARRAY;
+	return texture;
+};
+
+var setTextureQuality = function(glTextureType, quality) {
+	if (quality === TextureQuality.Pixel) {
+		// Unfortunately it doesn't seem to allow MAG_FILTER nearest with MIN_FILTER MIPMAP
+		// Might be able to use dFdx / dFdy to determine MIPMAP level and use two textures
+		// and blend the samples based of if it'd be mipmap level 0 or not
+		// Or use multiple samplers in an version 300 ES shader
+		gl.texParameteri(glTextureType, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(glTextureType, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+		if (anisotropyExt) {
+			gl.texParameterf(glTextureType, anisotropyExt.TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+		}
+		gl.generateMipmap(glTextureType);
+	}
+	else if (quality === TextureQuality.Highest) {
+		gl.texParameteri(glTextureType, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(glTextureType, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+		if (anisotropyExt) {
+			gl.texParameterf(glTextureType, anisotropyExt.TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+		}
+		gl.generateMipmap(glTextureType);
+	}
+	else if (quality === TextureQuality.High) {
+		gl.texParameteri(glTextureType, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(glTextureType, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+		if (anisotropyExt) {
+			gl.texParameterf(glTextureType, anisotropyExt.TEXTURE_MAX_ANISOTROPY_EXT, Math.round(maxAnisotropy/2));
+		}
+		gl.generateMipmap(glTextureType);
+	}
+	else if (quality === TextureQuality.Medium) {
+		gl.texParameteri(glTextureType, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(glTextureType, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	}
+	else {
+		gl.texParameteri(glTextureType, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(glTextureType, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	}
 };
 
 exports.setTexture = function(location, texture) {
 	gl.activeTexture(TextureLocations[location]);
-	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.bindTexture(texture.glTextureType, texture);
 };
 
 // Blending

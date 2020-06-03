@@ -265,10 +265,20 @@ var VorldConfig = (function() {
     // TODO: Build from parameters, perhaps an init from other methods
     // We have atlas builder maybe should move that there?
     var atlas = {};
-    atlas.greedy = false;       // NOTE: If true currently need to set texture filtering to "medium" on atlas to prevent MIP generation which causes bleeding with current greedy mesh shader
-    atlas.size = [128, 128];    // TODO: Change to tile space
-    atlas.padding = 2;          // TODO: Remove padding and use self generated MIPS
-    atlas.tileSize = 16;        // TODO: Remove once size is in tile space
+    atlas.tileSize = 64;
+    atlas.tileIndices = [];
+    atlas.tileIndices[blockIds.GRASS] = { side: 1, top: 0, bottom: 2 };
+    atlas.tileIndices[blockIds.SOIL] = { side: 2, top: 2, bottom: 2 };
+    atlas.tileIndices[blockIds.STONE] = { side: 5, top: 5, bottom: 5 };
+    atlas.tileIndices[blockIds.STONE_BLOCKS] = { side: 4, top: 4, bottom: 4 };
+    atlas.tileIndices[blockIds.HALF_STONE_BLOCKS] = { side: 4, top: 4, bottom: 4 };
+    atlas.tileIndices[blockIds.BEDROCK] = { side: 6, top: 6, bottom: 6 };
+    atlas.tileIndices[blockIds.WOOD] = { side: 8, top: 7, bottom: 7 };
+    atlas.tileIndices[blockIds.PLANKS] = { side: 10, top: 9, bottom: 9 };
+    atlas.tileIndices[blockIds.LEAVES] = { side: 11, top: 11, bottom: 11 };
+    atlas.tileIndices[blockIds.WATER] = { side: 12, top: 12, bottom: 12 };
+    return atlas;
+
     atlas.tileOffsets = [];
     atlas.tileOffsets[blockIds.STONE] = {
         side: [2,1],

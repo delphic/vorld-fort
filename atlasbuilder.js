@@ -6,7 +6,6 @@ var AtlasBuilder = (function() {
     let upscale = params.upscale, size = params.size, offset = params.padding;
     let image = new Image();
     image.onload = function() {
-
       atlasCanvas = document.createElement("canvas");
       document.body.appendChild(atlasCanvas);
       atlasCanvas.style = "display: none";

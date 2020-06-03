@@ -144,21 +144,11 @@ var Mesher = (function() {
 	flipRotation = quat.setAxisAngle(quat.create(), [1,0,0], Math.PI);
 	vertex = vec3.create();
 
-	var adjustTextureCoords = function(textureArray, faceIndex, tileOffset) {
-		var tileSize = atlas.tileSize;
-		var tilePadding = atlas.padding;
+	var adjustTextureCoords = function(textureArray, faceIndex, tileIndex) {
 		for(var i = 8 * faceIndex, l = i + 8; i < l; i += 2) {
-			if (atlas.greedy) {
-				// tile lookup
-				textureArray[i] = tileOffset[0] + 0.5;
-				textureArray[i+1] = tileOffset[1] + 0.5;
-
-			} else {
-				// uv mapping
-				textureArray[i] = (tileSize * (textureArray[i] + tileOffset[0]) + tilePadding * tileOffset[0])  / atlas.size[0];		// s
-				var pixelsFromTop = tileSize * (tileOffset[1] + 1) + tilePadding * tileOffset[1];
-				textureArray[i+1] = (tileSize * textureArray[i+1] + (atlas.size[1] - pixelsFromTop)) / atlas.size[1]; 	// t
-			}
+			// tile lookup
+			textureArray[i] = tileIndex + 0.5;
+			textureArray[i+1] = tileIndex + 0.5;
 		}
 	};
 
@@ -235,11 +225,11 @@ var Mesher = (function() {
 		var rotation = blockRotation ? flipRotation : identityRotation;
 
 		if(faceIndex == cubeFaces.top) {
-			tile = atlas.tileOffsets[block].top;
+			tile = atlas.tileIndices[block].top;
 		} else if (faceIndex == cubeFaces.bottom) {
-			tile = atlas.tileOffsets[block].bottom;
+			tile = atlas.tileIndices[block].bottom;
 		} else {
-			tile = atlas.tileOffsets[block].side;
+			tile = atlas.tileIndices[block].side;
 		}
 
 		offset = faceIndex * 12;
