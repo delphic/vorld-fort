@@ -153,7 +153,9 @@ var generateMeshes = function(vorld) {
 	var mesher = new Worker('mesherworker.js');
 	mesher.onmessage = function(e) {
 		if (e.data.mesh) {
-			var meshObject = scene.add({ mesh: Fury.Mesh.create(e.data.mesh), material: atlasMaterial });
+			var mesh = Fury.Mesh.create(e.data.mesh);
+			mesh.tileBuffer = Fury.Renderer.createBuffer(e.data.mesh.tileIndices, 1);
+			var meshObject = scene.add({ mesh: mesh, material: atlasMaterial });
 			vec3.add(meshObject.transform.position, meshObject.transform.position, vec3.clone(e.data.offset));
 			meshes.push(meshObject);
 		}

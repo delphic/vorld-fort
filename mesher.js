@@ -225,11 +225,11 @@ var Mesher = (function() {
 		var rotation = blockRotation ? flipRotation : identityRotation;
 
 		if(faceIndex == cubeFaces.top) {
-			tile = atlas.tileIndices[block].top;
+			tile = (atlas.arraySize - 1) - atlas.tileIndices[block].top;
 		} else if (faceIndex == cubeFaces.bottom) {
-			tile = atlas.tileIndices[block].bottom;
+			tile = (atlas.arraySize - 1) - atlas.tileIndices[block].bottom;
 		} else {
-			tile = atlas.tileIndices[block].side;
+			tile = (atlas.arraySize - 1) - atlas.tileIndices[block].side;
 		}
 
 		offset = faceIndex * 12;
@@ -265,11 +265,17 @@ var Mesher = (function() {
 
 		offset = faceIndex * 8;
 		textureCoordinates = jsonData.textureCoordinates.slice(offset, offset + 8);
-		adjustTextureCoords(textureCoordinates, 0, tile);
+		// adjustTextureCoords(textureCoordinates, 0, tile);
+
+		if (!mesh.tileIndices) {
+			mesh.tileIndices = [];
+		}
+		tileIndices = [ tile, tile, tile, tile ];
 
 		concat(mesh.vertices, vertices);
 		concat(mesh.normals, normals);
 		concat(mesh.textureCoordinates, textureCoordinates);
+		concat(mesh.tileIndices, tileIndices);
 		mesh.indices.push(n,n+1,n+2, n,n+2,n+3);
 	};
 

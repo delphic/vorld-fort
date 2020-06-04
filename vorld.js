@@ -266,6 +266,7 @@ var VorldConfig = (function() {
     // We have atlas builder maybe should move that there?
     var atlas = {};
     atlas.tileSize = 64;
+    atlas.arraySize = 13;
     atlas.tileIndices = [];
     atlas.tileIndices[blockIds.GRASS] = { side: 1, top: 0, bottom: 2 };
     atlas.tileIndices[blockIds.SOIL] = { side: 2, top: 2, bottom: 2 };
@@ -277,59 +278,6 @@ var VorldConfig = (function() {
     atlas.tileIndices[blockIds.PLANKS] = { side: 10, top: 9, bottom: 9 };
     atlas.tileIndices[blockIds.LEAVES] = { side: 11, top: 11, bottom: 11 };
     atlas.tileIndices[blockIds.WATER] = { side: 12, top: 12, bottom: 12 };
-    return atlas;
-
-    atlas.tileOffsets = [];
-    atlas.tileOffsets[blockIds.STONE] = {
-        side: [2,1],
-        top: [2,1],
-        bottom: [2,1]
-    };
-    atlas.tileOffsets[blockIds.SOIL] = {
-  		side: [2,0],
-  		top: [2,0],
-  		bottom: [2,0]
-  	};
-  	atlas.tileOffsets[blockIds.GRASS] = {
-  		side: [1,0],
-  		top: [0,0],
-  		bottom: [2,0]
-  	};
-  	atlas.tileOffsets[blockIds.WOOD] = {
-  		side: [1,2],
-  		top: [0,2],
-  		bottom: [0,2]
-  	};
-      atlas.tileOffsets[blockIds.LEAVES] = {
-  		side: [4,0],
-  		top: [4,0],
-  		bottom: [4,0]
-  	};
-  	atlas.tileOffsets[blockIds.WATER] = {
-      	side: [3,1],
-      	top: [3,1],
-      	bottom: [3,1]
-      };
-    atlas.tileOffsets[blockIds.BEDROCK] = {
-  		side: [3,0],
-  		top: [3,0],
-  		bottom: [3,0],
-  	};
-    atlas.tileOffsets[blockIds.STONE_BLOCKS] = {
-      side: [1, 1],
-      top: [1, 1],
-      bottom: [1, 1]
-    };
-    atlas.tileOffsets[blockIds.HALF_STONE_BLOCKS] = {
-      side: [1, 1],
-      top: [1, 1],
-      bottom: [1, 1]
-    };
-    atlas.tileOffsets[blockIds.PLANKS] = {
-      side: [3, 2],
-      top: [2, 2],
-      bottom: [2, 2]
-    };
     return atlas;
   };
   return exports;
