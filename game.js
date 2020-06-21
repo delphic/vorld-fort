@@ -18,6 +18,7 @@ quat.rotate = (function() {
 	};
 })();
 
+var shouldAutoScale = true;
 var resolutionFactor = 1; // Lower this for low-spec devices
 var cameraRatio = 16 / 9;
 var updateCanvasSize = function() {
@@ -44,9 +45,6 @@ var shader = Fury.Shader.create(VoxelShader.create(atlas));
 var atlasMaterial = Fury.Material.create({ shader: shader });
 // Use upscaled texture to allow for reasonable resolution closeup
 // when using mipmaps to prevent artifacts at distance.
-
-// TODO: Ideally take minimal sized atlas with no padding then use canvas2D
-// to generate atlas upscaled + padded as demanded by atlas config
 
 // Regeneration Variables and form details
 var generationConfig = {
@@ -174,8 +172,9 @@ var generateMeshes = function(vorld) {
 
 var framesInLastSecond = 0;
 var timeSinceLastFrame = 0;
+var lowFpsCounter = 0;
 
-var loop = function(){
+var loop = function() {
 	var elapsed = Date.now() - lastTime;
 	lastTime += elapsed;
 	elapsed /= 1000;
@@ -184,6 +183,21 @@ var loop = function(){
 	framesInLastSecond++;
 	if(timeSinceLastFrame >= 1)
 	{
+	    if (shouldAutoScale) {
+    	    if (framesInLastSecond < 30) {
+    	        lowFpsCounter++;
+    	    } else {
+    	        lowFpsCounter--;
+    	    }
+    	    
+    	    if (lowFpsCounter > 5) {
+    	        lowFpsCounter = 0;
+    	        resolutionFactor *= 0.5;
+    	        updateCanvasSize();
+    	        console.log("FPS consistently below 30, reducing rendering resolution");
+    	    }	        
+	    }
+	    
 		// This is where you'd set the value in an FPS counter, if there was one
 		framesInLastSecond = 0;
 		timeSinceLastFrame = 0;

@@ -35,6 +35,13 @@ fieldset input.button {
 #fury {
 	width: 100%;
 	height: 100vh;
+	/* pixelated image rendering if resizing */
+	image-rendering: crisp-edges; /* Firefox */
+	image-rendering: -moz-crisp-edges;
+	image-rendering: optimizespeed;
+	image-rendering: pixelated; /* Chrome */
+	/* Ideally would just use pixelated, but not implemented across browsers */
+	/* https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering */
 }
 #progressDisplay {
 	position: absolute;
