@@ -11,7 +11,7 @@ var Generator = (function() {
 	// Expose generation variables. - DONE!
 		// Choice of tower or fort  (fold this into footpint)
 	// Auto spacing windows in larger towers - DONE!
-	// Windows on Walls - auto spacing
+	// Windows on Walls - auto spacing - DONE!
 	// Block Type Varitions
 
 	// Extensions
@@ -91,13 +91,15 @@ var Generator = (function() {
 		}
 	};
 
-	var fillFloor = function(x, z, y, size, block) {
+	var fillFloor = function(x, z, y, size, floorIndex, block) {
 		let offset = -Math.floor(size / 2);
+		let sign = floorIndex % 2 ? 1 : -1; // Alterate side so it's not just one huge drop
 		fill(x, z, y, size, block);
-		Vorld.addBlock(vorld, x + offset, y, z + offset, 0);
+		// Would be nice if we could have adjancy info to take into account
+		Vorld.addBlock(vorld, x + sign *offset, y, z + offset, 0);
 	};
 
-	var buildTower = function(x, z, y, foors, towerWidth) {
+	var buildTower = function(x, z, y, floors, towerWidth) {
 		// Each floor is a section (height 4) and a ceiling (1 block)
 		// So currently a floor 5 height except top floor which is 2 more
 		// This should be able to be variable - maybe we should take
@@ -115,11 +117,11 @@ var Generator = (function() {
 		// Plus stairs peices on top?
 
 		// Floors
-		for (let i = 0; i < foors - 1; i++) {
+		for (let i = 0; i < floors - 1; i++) {
 			addSection(x, z, y, towerWidth);
 			y += 4;
 			addRing(x, z, y, towerWidth, VorldConfig.BlockIds.STONE_BLOCKS);
-			fillFloor(x, z, y, towerWidth - 2, VorldConfig.BlockIds.PLANKS);
+			fillFloor(x, z, y, towerWidth - 2, i, VorldConfig.BlockIds.PLANKS);
 			y += 1;
 		}
 
@@ -129,7 +131,7 @@ var Generator = (function() {
 		addRing(x, z, y++, towerWidth, VorldConfig.BlockIds.STONE_BLOCKS);
 		addRing(x, z, y++, towerWidth, VorldConfig.BlockIds.STONE_BLOCKS);
 		addRing(x, z, y, towerWidth, VorldConfig.BlockIds.STONE_BLOCKS);
-		fillFloor(x, z, y, towerWidth - 2, VorldConfig.BlockIds.PLANKS);
+		fillFloor(x, z, y, towerWidth - 2, floors - 1, VorldConfig.BlockIds.PLANKS);
 		y += 1;
 
 		// Battlements
@@ -152,7 +154,7 @@ var Generator = (function() {
 			y = baseY + floors[i] * 5;
 			for (let j = 1; j < 3; j++) {
 			    for (let k = -windowOffset; k <= windowOffset; k += spacing) { 
-    				if (j == 1 || j == 2) {
+    				if (j === 1 || j === 2) {
     					if (!adjaency || adjaency[0] || Math.abs(k) > 2)    // Make window if no adjancy info, have signal for adjaency or suitably far from door position (center)
     						Vorld.addBlock(vorld, x - half, j + y, z + k, VorldConfig.BlockIds.HALF_STONE_BLOCKS);
     					if (!adjaency || adjaency[1] || Math.abs(k) > 2)
@@ -162,7 +164,7 @@ var Generator = (function() {
     					if (!adjaency || adjaency[3] || Math.abs(k) > 2)
     						Vorld.addBlock(vorld, x + k, j + y, z + half, VorldConfig.BlockIds.HALF_STONE_BLOCKS);
     				}
-    				if (j == 2) {
+    				if (j === 2) {
     					if (!adjaency || adjaency[0] || Math.abs(k) > 2)
     						Vorld.addBlockRotation(vorld, x - half, j + y, z + k, 1);
     					if (!adjaency || adjaency[1] || Math.abs(k) > 2)
@@ -237,9 +239,10 @@ var Generator = (function() {
 
 	var buildWall = function(xMin, xMax, zMin, zMax, y, floors, rotation) {
 		// rotation - 0 => xMin is front, 1 => xMax is front, 2 => zMin, 3 => zMax
+		// ^^ This is kinda crazy, "left, right, back, forward"? "forward, right, back, left" would make more sense
 
 		// Base
-		fillRect(xMin, xMax, zMin, zMax, y,  VorldConfig.BlockIds.STONE_BLOCKS);
+		fillRect(xMin, xMax, zMin, zMax, y, VorldConfig.BlockIds.STONE_BLOCKS);
 		y += 1;
 
 		// Wall
@@ -247,35 +250,40 @@ var Generator = (function() {
 			// TODO: Pillars on internal side
 			for(let k = 0; k < 5; k++) {
 				if (rotation === 0) {
-						// xMin is front
-						// so pillars at zMin and zMax
-						// fill in between
-						for (let i = zMin; i <= zMax; i++) {
-							Vorld.addBlock(vorld, xMin + 1, y+k, i, k == 4 || i == zMin || i == zMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
-						}
+					// xMin is front
+					// so pillars at zMin and zMax
+					// fill in between
+					for (let i = zMin; i <= zMax; i++) {
+						Vorld.addBlock(vorld, xMin + 1, y+k, i, k == 4 || i == zMin || i == zMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
+					}
 				} else if (rotation === 1) {
-						// xMax is front
-						// so pillars at zMin and zMax
-						// fill in between
-						for (let i = zMin; i <= zMax; i++) {
-							Vorld.addBlock(vorld, xMax - 1, y+k, i, k == 4 || i == zMin || i == zMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
-						}
+					// xMax is front
+					// so pillars at zMin and zMax
+					// fill in between
+					for (let i = zMin; i <= zMax; i++) {
+						Vorld.addBlock(vorld, xMax - 1, y+k, i, k == 4 || i == zMin || i == zMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
+					}
 				} else if (rotation === 2) {
-						// zMin is front
-						// so pillars at xMin and xMax
-						// fill in between
-						for (let i = xMin ; i <= xMax; i++) {
-							Vorld.addBlock(vorld, i, y+k, zMin + 1, k == 4 || i == xMin || i == xMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
-						}
+					// zMin is front
+					// so pillars at xMin and xMax
+					// fill in between
+					for (let i = xMin ; i <= xMax; i++) {
+						Vorld.addBlock(vorld, i, y+k, zMin + 1, k == 4 || i == xMin || i == xMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
+					}
 				} else if (rotation === 3) {
-						// zMax is front
-						// so pillars at xMin and xMax
-						// fill in between
-						for (let i = xMin ; i <= xMax; i++) {
-							Vorld.addBlock(vorld, i, y+k, zMax - 1, k == 4 || i == xMin || i == xMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
-						}
+					// zMax is front
+					// so pillars at xMin and xMax
+					// fill in between
+					for (let i = xMin ; i <= xMax; i++) {
+						Vorld.addBlock(vorld, i, y+k, zMax - 1, k == 4 || i == xMin || i == xMax ? VorldConfig.BlockIds.STONE_BLOCKS :  VorldConfig.BlockIds.STONE);
+					}
 				}
 			}
+			
+			if (index > 0) {
+			    addWallWindows(xMin, xMax, zMin, zMax, y, index, rotation);
+			}
+			
 			y += 5;
 
 			// Battlements and Floor
@@ -328,6 +336,70 @@ var Generator = (function() {
     			break;
     		}
     	}
+	};
+	
+	var addWallWindows = function(xMin, xMax, zMin, zMax, y, floorIndex, rotation) {
+		// rotation - 0 => xMin is front, 1 => xMax is front, 2 => zMin, 3 => zMax
+
+        // Create Ledge for looking out of windows, with alterating hole for ladder (health and safety and all that)
+        switch(rotation) {
+            case 0:
+            {
+                fillRect(xMin+2, xMin+2, zMin+floorIndex%2, zMax-((floorIndex+1)%2), y-1, VorldConfig.BlockIds.PLANKS);
+                fillRect(xMin+3, xMin+3, zMin, zMax, y-1, VorldConfig.BlockIds.STONE_BLOCKS);
+                break;
+            }
+            case 1:
+            {
+                fillRect(xMax-2, xMax-2, zMin+floorIndex%2, zMax-((floorIndex+1)%2), y-1, VorldConfig.BlockIds.PLANKS);
+                fillRect(xMax-3, xMax-3, zMin, zMax, y-1, VorldConfig.BlockIds.STONE_BLOCKS);
+                break;    
+            }
+            case 2:
+            {
+                fillRect(xMin+(floorIndex%2), xMax-((floorIndex+1)%2), zMin+2, zMin+2, y-1, VorldConfig.BlockIds.PLANKS);
+                fillRect(xMin, xMax, zMin+3, zMin+3, y-1, VorldConfig.BlockIds.STONE_BLOCKS);
+                break;    
+            }
+            case 3:
+            {
+                fillRect(xMin+(floorIndex%2), xMax-((floorIndex+1)%2), zMax-2, zMax-2, y-1, VorldConfig.BlockIds.PLANKS);
+                fillRect(xMin, xMax, zMax-3, zMax - 3, y-1, VorldConfig.BlockIds.STONE_BLOCKS);
+                break;    
+            }
+        }
+
+	    let size = rotation < 2 ? Math.abs(zMax - zMin) : Math.abs(xMax - xMin); 
+	    let midZ = Math.floor(0.5 * (zMax - zMin)) + zMin;
+	    let midX = Math.floor(0.5 * (xMax - xMin)) + xMin; 
+	    let spacing = 4, windowCount = Math.max(1, Math.round((size - 6) / spacing));
+		let windowOffset = Math.ceil(0.5 * spacing * (windowCount - 1));
+		
+		for (let j = 1; j < 3; j++) {
+		    for (let k = -windowOffset; k <= windowOffset; k += spacing) { 
+    			if (j === 1 || j === 2) {
+    				if (rotation === 0)
+    					Vorld.addBlock(vorld, xMin + 1, j + y, midZ + k, VorldConfig.BlockIds.HALF_STONE_BLOCKS);
+    				if (rotation === 1)
+    					Vorld.addBlock(vorld, xMax - 1, j + y, midZ + k, VorldConfig.BlockIds.HALF_STONE_BLOCKS);
+    				if (rotation === 2)
+    					Vorld.addBlock(vorld, midX + k, j + y, zMin + 1, VorldConfig.BlockIds.HALF_STONE_BLOCKS);
+    				if (rotation === 3)
+    					Vorld.addBlock(vorld, midX + k, j + y, zMax - 1, VorldConfig.BlockIds.HALF_STONE_BLOCKS);
+    			}
+    			if (j === 2) {
+    				if (rotation === 0)
+    					Vorld.addBlockRotation(vorld, xMin + 1, j + y, midZ + k, 1);
+    				if (rotation === 1)
+    					Vorld.addBlockRotation(vorld, xMax - 1, j + y, midZ + k, 1);
+    				if (rotation === 2)
+    					Vorld.addBlockRotation(vorld, midX + k, j + y, zMin + 1, 1);
+    				if (rotation === 3)
+    					Vorld.addBlockRotation(vorld, midX + k, j + y, zMax - 1, 1);
+    			}
+		    }
+		}
+
 	};
 
 	var fillLineX = function(xMin, xMax, y, z, blockPredicate, flipPredicate) {
