@@ -5,6 +5,7 @@ var $ = window.$;
 var Fury = window.Fury;
 var VorldConfig = window.VorldConfig;
 var VoxelShader = window.VoxelShader;
+var Generator = window.Generator;
 var debug = false;
 
 // Vorld - Procedural Generation Experiements
@@ -168,11 +169,13 @@ var generateMeshes = function(vorld) {
 	mesher.postMessage({
 		chunkData: vorld
 	});
-}
+};
 
 var framesInLastSecond = 0;
 var timeSinceLastFrame = 0;
 var lowFpsCounter = 0;
+
+// TODO: on lose focus pause and stop counter
 
 var loop = function() {
 	var elapsed = Date.now() - lastTime;
