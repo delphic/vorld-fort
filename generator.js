@@ -3,6 +3,7 @@ var Generator = (function() {
 	var exports = {};
 
 	// Castle Generator Goals
+
 	// Towers - DONE!
 	// Walls - DONE!
 	// Doorways	- DONE!
@@ -12,7 +13,14 @@ var Generator = (function() {
 		// Choice of tower or fort  (fold this into footpint)
 	// Auto spacing windows in larger towers - DONE!
 	// Windows on Walls - auto spacing - DONE!
-	// Block Type Varitions - Deferred
+	// Block Type Varitions - Defer, arguably would be better to change the design rather than just swap out blocks
+	// Pillars to support top wall floors
+	// Supports on inter wall floors (but don't take space behind door)
+	
+	// Parameters
+
+	// Add Window Spacing Parameter
+	// Have wall width rather than tower spacing
 
 	// Extensions
 
@@ -34,7 +42,7 @@ var Generator = (function() {
 	// Walls should have a maximum depth - and should update door positions accordingly
 	// Circular Land with peardrop shape to look like a floating island - DONE!
 	// A "Keep" Tower next to entrance if walls large enough
-	// Alternate trap door hole positions for thin Towers
+	// Alternate trap door hole positions for thin Towers - DONE
 	// Create Stair Cases for large towers
 	// Fort Interior  stairs to walls
 	// If Wall Floors == TowerFloors - add steps in battlements from wall to tower
@@ -48,6 +56,7 @@ var Generator = (function() {
 
 	// TODO: Move to init method - requires us to add the vorld to all functions...
 	var vorld = Vorld.create({ chunkSize: 32 });
+
 
 	var addSection = function(x, z, y, size) {
 		let half = Math.floor(size / 2);
