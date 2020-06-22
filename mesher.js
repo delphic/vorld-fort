@@ -3,9 +3,8 @@ var Mesher = (function() {
 
 	// Data is meshed by adding quads for each visible voxel face to a mesh
 	// One mesh per 32 cubic 'chunk' of voxels.
-	// Uses texture coordinates and an atlas to allow for multiple voxel types in
-	// a single texture.
-	// Has option of outputing texture coordinates as a tile lookup rather than uv mapping
+	// Uses texture coordinates, a tile indices array with a texture array to
+	// allow for multiple voxel types in a single texture.
 	var exports = {};
 
 	// Basic Cube Geometry JSON
@@ -144,14 +143,6 @@ var Mesher = (function() {
 	flipRotation = quat.setAxisAngle(quat.create(), [1,0,0], Math.PI);
 	vertex = vec3.create();
 
-	var adjustTextureCoords = function(textureArray, faceIndex, tileIndex) {
-		for(var i = 8 * faceIndex, l = i + 8; i < l; i += 2) {
-			// tile lookup
-			textureArray[i] = tileIndex + 0.5;
-			textureArray[i+1] = tileIndex + 0.5;
-		}
-	};
-
 	var buildMesh = function(vorld, chunkI, chunkJ, chunkK) {
 		var mesh = {
 			vertices: [],
@@ -265,7 +256,6 @@ var Mesher = (function() {
 
 		offset = faceIndex * 8;
 		textureCoordinates = jsonData.textureCoordinates.slice(offset, offset + 8);
-		// adjustTextureCoords(textureCoordinates, 0, tile);
 
 		if (!mesh.tileIndices) {
 			mesh.tileIndices = [];
