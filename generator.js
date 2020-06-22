@@ -12,9 +12,25 @@ var Generator = (function() {
 		// Choice of tower or fort  (fold this into footpint)
 	// Auto spacing windows in larger towers - DONE!
 	// Windows on Walls - auto spacing - DONE!
-	// Block Type Varitions
+	// Block Type Varitions - Deferred
 
 	// Extensions
+
+	// # New Block Meshes
+	// Stairs, Doors, Posts, 45 degree pecies
+
+	// ## Castle Shapes
+	// Angled straight walls - feels like a minimum amount from tower should go straight out
+	// then you could provide a number of steps to take on the axis you exitted the tower
+	// per moving 1 in or out on the other axis
+	// Curved Walls - similar to above but the number of steps to take decreases on a pattern
+	// and when reaching one it swaps the axes (or starts increasing again but upping the
+	// in / out step each time it itterates, whichever is cleaner)
+	// Q: Is it worth us making a little canvas based interface for placing towers? and
+	// connecting via walls? i.e. a footprint drawer?
+	// Related: "Draw outline which builds walls with towers at the corners"
+
+	// ## General
 	// Walls should have a maximum depth - and should update door positions accordingly
 	// Circular Land with peardrop shape to look like a floating island - DONE!
 	// A "Keep" Tower next to entrance if walls large enough
@@ -173,7 +189,7 @@ var Generator = (function() {
     						Vorld.addBlockRotation(vorld, x + k, j + y, z - half, 1);
     					if (!adjaency || adjaency[3] || Math.abs(k) > 2)
     						Vorld.addBlockRotation(vorld, x + k, j + y, z + half, 1);
-    				}      
+    				}
 			    }
 			}
 		}
@@ -292,7 +308,7 @@ var Generator = (function() {
 			}
 		}
 	};
-	
+
 	var buildWallTop = function(xMin, xMax, zMin, zMax, y, rotation) {
 	    switch(rotation) {
     		case 0:

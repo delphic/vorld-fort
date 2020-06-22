@@ -6,6 +6,3 @@ Using [Fury](https://github.com/delphic/Fury) for rendering, based on the [Voxel
 
 ## Generators
 * Fort Generator
-
-## Known Issues
-At larger distances the mipmapping causes the blocks to bleed into one another resulting in noticable rendering artifacts.
