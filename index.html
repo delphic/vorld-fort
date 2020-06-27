@@ -21,7 +21,14 @@
 				<input id="hideControls" class="button" type="button" value="Understood" />
 		</fieldset>
 		<fieldset id="generationParameters">
-			<input id="showGenerationForm" class="button" type="button" value="Show Generation Parameters" />
+		    <div id="showFormButtons">
+		        <div>
+        			<input id="showGenerationForm" class="button" type="button" value="Show Generation Parameters" />
+    			</div>
+    			<div>
+        			<input id="showLightingForm" class="button" type="button" value="Show Lighting Parameters" />
+    			</div>
+		    </div>
 			<form id="generationForm">
 				<div>
 					<label for="spacing">Tower Spacing: </label><input id="spacing" type="number" step="2" min="4" value="12" />
@@ -39,6 +46,32 @@
 					<input id="regen" class="button" type="button" value="Regenerate Fort" />
 					<input id="hideGenerationForm" class="button" type="button" value="Hide Form" />
 				</div>
+			</form>
+			<form id="lightingForm">
+			    <div>
+			        <label for="skyColor">Sky Color: </label><input id="skyColor" type="color" value="#6373ff" />
+			    </div>
+			    <div>
+			        <label for="lightColor">Light Color: </label><input id="lightColor" type="color" value="#ffffff" />
+			    </div>
+			    <div>
+			        <p>Light Direction</p>
+			        <div>
+		    	        <label for="lightDirX">X: </label><input id="lightDirX" class="slider" type="range" min="-1" max="1" value="-0.5" step="0.1" />
+			        </div>
+			        <div>
+	    		        <label for="lightDirY">Y: </label> <input id="lightDirY" class="slider" type="range" min="-1" max="1" value="1" step="0.1" />
+			        </div>
+			        <div>
+    			        <label for="lightDirZ">Z: </label><input id="lightDirZ" class="slider" type="range" min="-1" max="1" value="0.5" step="0.1" />
+                    </div>
+			    </div>
+			    <div>
+			        <label for="ambientColor">Ambient Color: </label><input id="ambientColor" type="color" value="#ffffff" />
+			    </div>
+			    <div>
+			        <input id="hideLightingForm" class="button" type="button" value="Hide Form" />
+			    </div>
 			</form>
 		</fieldset>
 		<div id="progressDisplay">

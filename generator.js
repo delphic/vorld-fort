@@ -25,7 +25,7 @@ var Generator = (function() {
 	// Extensions
 
 	// # New Block Meshes
-	// Stairs, Doors, Posts, 45 degree pecies
+	// Stairs, Doors, Posts, 45 degree pieces
 
 	// ## Castle Shapes
 	// Angled straight walls - feels like a minimum amount from tower should go straight out

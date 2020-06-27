@@ -62,19 +62,68 @@ var getGenerationVariables = function() {
 	}
 };
 
+var hexToRgb = function (hex) {
+    var value = parseInt(hex, 16);
+    var r = (value >> 16) & 255;
+    var g = (value >> 8) & 255;
+    var b = value & 255;
+    return [r, g, b];
+};
+
 $(document).ready(function(){
 	$("#hideControls").click(function() {
 		$("#controls").hide();
 	});
 
+    $("#showLightingForm").click(function() {
+        $("#lightingForm").show();
+        $("#showFormButtons").hide();
+    });
+    $("#hideLightingForm").click(function() {
+        $("#lightingForm").hide();
+        $("#showFormButtons").show();
+    });
+
 	$("#showGenerationForm").click(function() {
 		$("#generationForm").show();
-		$("#showGenerationForm").hide();
+		$("#showFormButtons").hide();
 	});
 	$("#hideGenerationForm").click(function() {
 		$("#generationForm").hide();
-		$("#showGenerationForm").show();
+		$("#showFormButtons").show();
 	});
+	
+	// Some presets on this might be nice
+	
+	$("#skyColor").change(function() {
+	    var rgb = hexToRgb(this.value.substring(1));
+	    setClearColor(rgb[0], rgb[1], rgb[2]);
+	});
+	$("#lightColor").change(function() {
+	    var rgb = hexToRgb(this.value.substring(1));
+	    atlasMaterial.lightColor[0] = rgb[0] / 255;
+	    atlasMaterial.lightColor[1] = rgb[1] / 255;
+	    atlasMaterial.lightColor[2] = rgb[2] / 255;
+	    atlasMaterial.dirty = true;
+	});
+	$("#ambientColor").change(function() {
+	    var rgb = hexToRgb(this.value.substring(1));
+	    atlasMaterial.ambientColor[0] = rgb[0] / 255;
+	    atlasMaterial.ambientColor[1] = rgb[1] / 255;
+	    atlasMaterial.ambientColor[2] = rgb[2] / 255;
+	    atlasMaterial.dirty = true;
+	});
+	
+	var updateLightDirection = function() {
+	    atlasMaterial.lightDir[0] = parseFloat($("#lightDirX").val());
+	    atlasMaterial.lightDir[1] = parseFloat($("#lightDirY").val());
+	    atlasMaterial.lightDir[2] = parseFloat($("#lightDirZ").val());
+	    atlasMaterial.dirty = true;
+	};
+	
+	$("#lightDirX").change(updateLightDirection);
+	$("#lightDirY").change(updateLightDirection);
+	$("#lightDirZ").change(updateLightDirection);
 
 	$("#regen").click(function(event){
 		$("#progressDisplay").show();
@@ -171,6 +220,7 @@ var generateMeshes = function(vorld) {
 	});
 };
 
+var lightDirection;
 var framesInLastSecond = 0;
 var timeSinceLastFrame = 0;
 var lowFpsCounter = 0;
@@ -278,6 +328,9 @@ let image = new Image();
 image.onload = function() {
 	var texture = Fury.Renderer.createTextureArray(image, 64, 64, 13, "pixel", true);
 	atlasMaterial.textures["uSampler"] = texture;
+	atlasMaterial.lightDir = vec3.fromValues(-1.0, 2.0, 1.0); // Was -1, 2, 1
+	atlasMaterial.lightColor = vec3.fromValues(1.0, 1.0, 1.0); 
+	atlasMaterial.ambientColor = vec3.fromValues(1.0, 1.0, 1.0);
 	awake();
 };
 image.src = "images/atlas_array.png";

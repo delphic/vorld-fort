@@ -10,6 +10,7 @@ var VoxelShader = (function() {
         "in vec3 aVertexNormal;",
         "in float aTileIndex;",
 
+        "uniform vec3 uLightingDirection;",
         "uniform mat4 uMVMatrix;",
         "uniform mat4 uPMatrix;",
 
@@ -30,7 +31,9 @@ var VoxelShader = (function() {
           // are all axis aligned and we're going to be using frac value anyway, it's unnecessary
           // "vWorldPosition = vec4(aVertexPosition + vec3(0.5, 0.5, 0.5), 1.0);",
 
-          "vLightWeight = 0.5 + 0.5 * max(dot(aVertexNormal, normalize(vec3(-1.0, 2.0, 1.0))), 0.0);",
+            // Lighting Direction: vec3(-1.0,2.0,1.0)
+
+          "vLightWeight = 0.5 * max(dot(aVertexNormal, normalize(uLightingDirection)), 0.0);",
         "}"].join('\n');
     },
     fs: function() {
@@ -46,6 +49,8 @@ var VoxelShader = (function() {
         "in float vTileIndex;",
 
         "uniform sampler2DArray uSampler;",
+        "uniform vec3 uLightColor;",
+        "uniform vec3 uAmbientColor;",
 
         "out vec4 fragColor;",
 
@@ -57,7 +62,7 @@ var VoxelShader = (function() {
 
             "vec4 color = texture(uSampler, vec3(vTextureCoord, vTileIndex));",
 
-            "fragColor = vec4(vLightWeight * color.rgb, color.a);",
+            "fragColor = vec4(((0.5 * uAmbientColor) + (vLightWeight * uLightColor)) * color.rgb, color.a);",
         "}"].join('\n');
       }
   };
@@ -70,11 +75,16 @@ var VoxelShader = (function() {
       vsSource: vsSource,
       fsSource: fsSource,
         attributeNames: [ "aVertexPosition", "aVertexNormal", "aTextureCoord", "aTileIndex" ],
-        uniformNames: [ "uMVMatrix", "uPMatrix", "uSampler" ],
+        uniformNames: ["uLightingDirection", "uMVMatrix", "uPMatrix", "uSampler", "uLightColor", "uAmbientColor" ],
         textureUniformNames: [ "uSampler" ],
         pMatrixUniformName: "uPMatrix",
         mvMatrixUniformName: "uMVMatrix",
         bindMaterial: function(material) {
+          // HACK: Should have a cleaner way to do this
+          Fury.Renderer.setUniformVector3("uLightingDirection", material.lightDir);
+          Fury.Renderer.setUniformVector3("uLightColor", material.lightColor);
+          Fury.Renderer.setUniformVector3("uAmbientColor", material.ambientColor);
+          this.enableAttribute("aLightingDirection");
           this.enableAttribute("aVertexPosition");
           this.enableAttribute("aTextureCoord");
           this.enableAttribute("aVertexNormal");

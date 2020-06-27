@@ -32,6 +32,9 @@ fieldset input.button {
 	width: auto;
 	margin: 5px 0;
 }
+fieldset input.slider {
+    width: 150px;
+}
 #fury {
 	width: 100%;
 	height: 100vh;

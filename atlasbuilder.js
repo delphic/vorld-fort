@@ -5,6 +5,7 @@ var AtlasBuilder = (function() {
   exports.build = function(params) {
     let upscale = params.upscale, size = params.size, offset = params.padding;
     let image = new Image();
+    // NOTE: If image never loads, then fury never initialises
     image.onload = function() {
       atlasCanvas = document.createElement("canvas");
       document.body.appendChild(atlasCanvas);
