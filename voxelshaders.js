@@ -1,6 +1,8 @@
 var VoxelShader = (function() {
   var exports = {};
 
+  // Fog Implementation from https://webglfundamentals.org/webgl/lessons/webgl-fog.html
+
   var shaderSource = {
     vs: function() {
       return [
@@ -17,6 +19,7 @@ var VoxelShader = (function() {
         // "out vec4 vWorldPosition;",
         "out vec2 vTextureCoord;",
         "out vec3 vNormal;",
+        "out vec3 vViewSpacePosition;",
         "out float vLightWeight;",
         "out float vTileIndex;",
 
@@ -31,9 +34,11 @@ var VoxelShader = (function() {
           // are all axis aligned and we're going to be using frac value anyway, it's unnecessary
           // "vWorldPosition = vec4(aVertexPosition + vec3(0.5, 0.5, 0.5), 1.0);",
 
-            // Lighting Direction: vec3(-1.0,2.0,1.0)
+          // Lighting Direction: vec3(-1.0,2.0,1.0)
 
           "vLightWeight = 0.5 * max(dot(aVertexNormal, normalize(uLightingDirection)), 0.0);",
+          
+          "vViewSpacePosition = (uMVMatrix * vec4(aVertexPosition, 1.0)).xyz;",
         "}"].join('\n');
     },
     fs: function() {
@@ -45,12 +50,16 @@ var VoxelShader = (function() {
         "in vec2 vTextureCoord;",
         //"in vec4 vWorldPosition;",
         "in vec3 vNormal;",
+        "in vec3 vViewSpacePosition;",  
         "in float vLightWeight;",
         "in float vTileIndex;",
 
         "uniform sampler2DArray uSampler;",
         "uniform vec3 uLightColor;",
         "uniform vec3 uAmbientColor;",
+        
+        "uniform vec3 uFogColor;",
+        "uniform float uFogDensity;",
 
         "out vec4 fragColor;",
 
@@ -61,8 +70,15 @@ var VoxelShader = (function() {
             //"float tileIndex = 8.0 - floor(vTextureCoord.s);",
 
             "vec4 color = texture(uSampler, vec3(vTextureCoord, vTileIndex));",
+            "vec4 litColor = vec4(((0.5 * uAmbientColor) + (vLightWeight * uLightColor)) * color.rgb, color.a);",
+            
+            "#define LOG2 1.442695",
+            
+            "float fogDistance = length(vViewSpacePosition);",
+            "float fogAmount = 1.0 - exp2(- uFogDensity * uFogDensity * fogDistance * fogDistance * LOG2);",
+            "fogAmount = clamp(fogAmount, 0.0, 1.0);",
 
-            "fragColor = vec4(((0.5 * uAmbientColor) + (vLightWeight * uLightColor)) * color.rgb, color.a);",
+            "fragColor = mix(litColor, vec4(uFogColor, 1.0), fogAmount);",
         "}"].join('\n');
       }
   };
@@ -75,15 +91,18 @@ var VoxelShader = (function() {
       vsSource: vsSource,
       fsSource: fsSource,
         attributeNames: [ "aVertexPosition", "aVertexNormal", "aTextureCoord", "aTileIndex" ],
-        uniformNames: ["uLightingDirection", "uMVMatrix", "uPMatrix", "uSampler", "uLightColor", "uAmbientColor" ],
+        uniformNames: ["uLightingDirection", "uMVMatrix", "uPMatrix", "uSampler", "uLightColor", "uAmbientColor", "uFogColor", "uFogDensity" ],
         textureUniformNames: [ "uSampler" ],
         pMatrixUniformName: "uPMatrix",
         mvMatrixUniformName: "uMVMatrix",
         bindMaterial: function(material) {
           // HACK: Should have a cleaner way to do this
+          // Arguably some of these are scene based variables not material, should we pass scene details in?
           Fury.Renderer.setUniformVector3("uLightingDirection", material.lightDir);
           Fury.Renderer.setUniformVector3("uLightColor", material.lightColor);
           Fury.Renderer.setUniformVector3("uAmbientColor", material.ambientColor);
+          Fury.Renderer.setUniformVector3("uFogColor", material.fogColor);
+          Fury.Renderer.setUniformFloat("uFogDensity", material.fogDensity);
           this.enableAttribute("aLightingDirection");
           this.enableAttribute("aVertexPosition");
           this.enableAttribute("aTextureCoord");

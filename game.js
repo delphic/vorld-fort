@@ -62,12 +62,18 @@ var getGenerationVariables = function() {
 	}
 };
 
-var hexToRgb = function (hex) {
+var hexToRgb = function(hex) {
     var value = parseInt(hex, 16);
     var r = (value >> 16) & 255;
     var g = (value >> 8) & 255;
     var b = value & 255;
     return [r, g, b];
+};
+
+var color32ToColor = function(out, color32) {
+    out[0] = color32[0] / 255;
+    out[1] = color32[1] / 255;
+    out[2] = color32[2] / 255;
 };
 
 $(document).ready(function(){
@@ -98,26 +104,32 @@ $(document).ready(function(){
 	$("#skyColor").change(function() {
 	    var rgb = hexToRgb(this.value.substring(1));
 	    setClearColor(rgb[0], rgb[1], rgb[2]);
+	    color32ToColor(atlasMaterial.fogColor, rgb);
+	    atlasMaterial.dirty = true;
 	});
 	$("#lightColor").change(function() {
 	    var rgb = hexToRgb(this.value.substring(1));
-	    atlasMaterial.lightColor[0] = rgb[0] / 255;
-	    atlasMaterial.lightColor[1] = rgb[1] / 255;
-	    atlasMaterial.lightColor[2] = rgb[2] / 255;
+	    color32ToColor(atlasMaterial.lightColor, rgb);
 	    atlasMaterial.dirty = true;
 	});
 	$("#ambientColor").change(function() {
 	    var rgb = hexToRgb(this.value.substring(1));
-	    atlasMaterial.ambientColor[0] = rgb[0] / 255;
-	    atlasMaterial.ambientColor[1] = rgb[1] / 255;
-	    atlasMaterial.ambientColor[2] = rgb[2] / 255;
+	    color32ToColor(atlasMaterial.ambientColor, rgb);
+	    atlasMaterial.dirty = true;
+	});
+	$("#fogDensity").change(function() {
+	    atlasMaterial.fogDensity = parseFloat(this.value);
+	    $("#fogDensityVal").html(atlasMaterial.fogDensity.toFixed(3));
 	    atlasMaterial.dirty = true;
 	});
 	
 	var updateLightDirection = function() {
 	    atlasMaterial.lightDir[0] = parseFloat($("#lightDirX").val());
+	    $("#lightDirXVal").html(atlasMaterial.lightDir[0].toFixed(1));
 	    atlasMaterial.lightDir[1] = parseFloat($("#lightDirY").val());
+	    $("#lightDirYVal").html(atlasMaterial.lightDir[1].toFixed(1));
 	    atlasMaterial.lightDir[2] = parseFloat($("#lightDirZ").val());
+	    $("#lightDirZVal").html(atlasMaterial.lightDir[2].toFixed(1));
 	    atlasMaterial.dirty = true;
 	};
 	
@@ -331,6 +343,8 @@ image.onload = function() {
 	atlasMaterial.lightDir = vec3.fromValues(-1.0, 2.0, 1.0); // Was -1, 2, 1
 	atlasMaterial.lightColor = vec3.fromValues(1.0, 1.0, 1.0); 
 	atlasMaterial.ambientColor = vec3.fromValues(1.0, 1.0, 1.0);
+	atlasMaterial.fogColor = vec3.fromValues(99/255, 115/255, 255/255); // Initial Sky Color
+	atlasMaterial.fogDensity = 0.01;
 	awake();
 };
 image.src = "images/atlas_array.png";
