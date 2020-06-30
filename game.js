@@ -98,9 +98,9 @@ $(document).ready(function(){
 		$("#generationForm").hide();
 		$("#showFormButtons").show();
 	});
-	
+
 	// Some presets on this might be nice
-	
+
 	$("#skyColor").change(function() {
 	    var rgb = hexToRgb(this.value.substring(1));
 	    setClearColor(rgb[0], rgb[1], rgb[2]);
@@ -122,7 +122,7 @@ $(document).ready(function(){
 	    $("#fogDensityVal").html(atlasMaterial.fogDensity.toFixed(3));
 	    atlasMaterial.dirty = true;
 	});
-	
+
 	var updateLightDirection = function() {
 	    atlasMaterial.lightDir[0] = parseFloat($("#lightDirX").val());
 	    $("#lightDirXVal").html(atlasMaterial.lightDir[0].toFixed(1));
@@ -132,7 +132,7 @@ $(document).ready(function(){
 	    $("#lightDirZVal").html(atlasMaterial.lightDir[2].toFixed(1));
 	    atlasMaterial.dirty = true;
 	};
-	
+
 	$("#lightDirX").change(updateLightDirection);
 	$("#lightDirY").change(updateLightDirection);
 	$("#lightDirZ").change(updateLightDirection);
@@ -254,15 +254,15 @@ var loop = function() {
     	    } else {
     	        lowFpsCounter--;
     	    }
-    	    
+
     	    if (lowFpsCounter > 5) {
     	        lowFpsCounter = 0;
     	        resolutionFactor *= 0.5;
     	        updateCanvasSize();
     	        console.log("FPS consistently below 30, reducing rendering resolution");
-    	    }	        
+    	    }
 	    }
-	    
+
 		// This is where you'd set the value in an FPS counter, if there was one
 		framesInLastSecond = 0;
 		timeSinceLastFrame = 0;
@@ -273,6 +273,7 @@ var loop = function() {
 };
 
 var localx = vec3.create();
+var localy = vec3.create();
 var localz = vec3.create();
 var unitx = vec3.fromValues(1,0,0);
 var unity = vec3.fromValues(0,1,0);
@@ -294,6 +295,7 @@ var handleInput = function(elapsed) {
 	var q = camera.rotation;
 	var p = camera.position;
 	vec3.transformQuat(localx, unitx, q);
+	vec3.transformQuat(localy, unity, q);
 	vec3.transformQuat(localz, unitz, q);
 
 	var mousePos = Input.MousePosition;
@@ -332,6 +334,12 @@ var handleInput = function(elapsed) {
 	if(Input.keyDown("d")) {
 		vec3.scaleAndAdd(p, p, localx, zoomRate*elapsed);
 	}
+	if (Input.keyDown("q")) {
+		vec3.scaleAndAdd(p, p, localy, zoomRate*elapsed);
+	}
+	if (Input.keyDown("e")) {
+		vec3.scaleAndAdd(p, p, localy, -zoomRate*elapsed);
+	}
 };
 
 // Create Texture
@@ -341,7 +349,7 @@ image.onload = function() {
 	var texture = Fury.Renderer.createTextureArray(image, 64, 64, 13, "pixel", true);
 	atlasMaterial.textures["uSampler"] = texture;
 	atlasMaterial.lightDir = vec3.fromValues(-1.0, 2.0, 1.0); // Was -1, 2, 1
-	atlasMaterial.lightColor = vec3.fromValues(1.0, 1.0, 1.0); 
+	atlasMaterial.lightColor = vec3.fromValues(1.0, 1.0, 1.0);
 	atlasMaterial.ambientColor = vec3.fromValues(1.0, 1.0, 1.0);
 	atlasMaterial.fogColor = vec3.fromValues(99/255, 115/255, 255/255); // Initial Sky Color
 	atlasMaterial.fogDensity = 0.01;
