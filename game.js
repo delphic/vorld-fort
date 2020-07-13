@@ -335,10 +335,10 @@ var handleInput = function(elapsed) {
 		vec3.scaleAndAdd(p, p, localx, zoomRate*elapsed);
 	}
 	if (Input.keyDown("q")) {
-		vec3.scaleAndAdd(p, p, localy, zoomRate*elapsed);
+		vec3.scaleAndAdd(p, p, localy, -zoomRate*elapsed);
 	}
 	if (Input.keyDown("e")) {
-		vec3.scaleAndAdd(p, p, localy, -zoomRate*elapsed);
+		vec3.scaleAndAdd(p, p, localy, zoomRate*elapsed);
 	}
 };
 
