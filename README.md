@@ -6,3 +6,5 @@ Using [Fury](https://github.com/delphic/Fury) for rendering, based on the [Voxel
 
 ## Generators
 * Fort Generator
+
+The software is licensed under MIT, the assets are in images are [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
