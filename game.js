@@ -215,8 +215,8 @@ var generateMeshes = function(vorld) {
 		if (e.data.mesh) {
 			var mesh = Fury.Mesh.create(e.data.mesh);
 			mesh.tileBuffer = Fury.Renderer.createBuffer(e.data.mesh.tileIndices, 1);
-			var meshObject = scene.add({ mesh: mesh, material: atlasMaterial });
-			vec3.add(meshObject.transform.position, meshObject.transform.position, vec3.clone(e.data.offset));
+			var meshObject = scene.add({ static: true, mesh: mesh, material: atlasMaterial, position: vec3.clone(e.data.offset) });
+			// ^^ TODO: Update Fury so that static is used
 			meshes.push(meshObject);
 		}
 		if (e.data.progress !== undefined) {
